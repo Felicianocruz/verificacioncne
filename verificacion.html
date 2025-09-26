@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Credencial CNE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            border-top: 5px solid #0056b3; /* Color azul CNE */
+        }
+        h1 {
+            color: #0056b3;
+            margin-bottom: 5px;
+            font-size: 1.5em;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+        .data-box {
+            background-color: #e9f0f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .label {
+            font-weight: bold;
+            color: #0056b3;
+            display: block;
+            margin-top: 10px;
+        }
+        .value {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .status-ok {
+            font-size: 1.5em;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Verificación CNE</h1>
+        <h2>Credencial Electrónico de Verificación (Local)</h2>
+        
+        <div class="data-box">
+            <span class="label">ESTADO DE VERIFICACIÓN:</span>
+            <div class="status-ok">¡DATOS CARGADOS Y EN LÍNEA!</div>
+        </div>
+
+        <div class="data-box">
+            <span class="label">NÚMERO DE IDENTIDAD (DNI):</span>
+            <div id="dni-output" class="value">Cargando...</div>
+            
+            <span class="label">NOMBRE COMPLETO:</span>
+            <div id="nombre-output" class="value">Cargando...</div>
+        </div>
+        
+        <div class="footer">
+            Esta información es provista por el servidor de verificación local (127.0.0.1:8000).
+        </div>
+    </div>
+
+    <script>
+        function getQueryParams() {
+            const params = {};
+            // Obtiene la parte de la URL después del ?
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+            
+            pairs.forEach(pair => {
+                const [key, value] = pair.split('=');
+                if (key && value) {
+                    // Decodifica el valor para manejar espacios y caracteres especiales
+                    params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '));
+                }
+            });
+            return params;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = getQueryParams();
+            const dni = params['dni'] || 'NO ENCONTRADO';
+            const nombre = params['nombre'] || 'NO ENCONTRADO';
+
+            document.getElementById('dni-output').textContent = dni;
+            document.getElementById('nombre-output').textContent = nombre;
+            
+            if (dni === 'NO ENCONTRADO') {
+                 document.querySelector('.status-ok').textContent = "ERROR: DNI Faltante";
+                 document.querySelector('.status-ok').style.color = "#dc3545";
+            }
+        });
+    </script>
+</body>
+</html>
