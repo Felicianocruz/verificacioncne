@@ -157,6 +157,11 @@
             <span class="label">NOMBRE COMPLETO:</span>
             <div id="nombre-output" class="value">Cargando...</div>
             
+            <!-- NUEVO CAMPO: PROYECTO -->
+            <span class="label">PROYECTO:</span>
+            <div id="proyecto-output" class="value">Cargando...</div>
+            <!-- FIN NUEVO CAMPO -->
+            
             <span class="label">FECHA DE CONSULTA:</span>
             <div id="fecha-consulta" class="value"></div>
         </div>
@@ -186,6 +191,8 @@
             const params = getQueryParams();
             const dni = params['dni'] || 'NO DISPONIBLE';
             const nombre = params['nombre'] || 'NO DISPONIBLE';
+            // ACTUALIZACIÓN: Leer el parámetro 'proyecto' de la URL
+            const proyecto = params['proyecto'] || 'NO DISPONIBLE';
             
             // Formato de fecha para la consulta
             const today = new Date().toLocaleDateString('es-HN', { 
@@ -198,17 +205,21 @@
 
             document.getElementById('dni-output').textContent = dni;
             document.getElementById('nombre-output').textContent = nombre;
+            // ACTUALIZACIÓN: Mostrar el proyecto
+            document.getElementById('proyecto-output').textContent = proyecto; 
             document.getElementById('fecha-consulta').textContent = today;
             document.getElementById('footer-date').textContent = today;
             
             const statusBox = document.getElementById('status-output');
 
-            if (dni === 'NO DISPONIBLE' || nombre === 'NO DISPONIBLE') {
+            // ACTUALIZACIÓN: Si falta el DNI, Nombre O Proyecto, se marca como error.
+            if (dni === 'NO DISPONIBLE' || nombre === 'NO DISPONIBLE' || proyecto === 'NO DISPONIBLE') {
                 // Si faltan datos en el QR, mostramos un error
-                statusBox.textContent = "¡ERROR DE VERIFICACIÓN! Faltan datos clave en el QR.";
+                statusBox.textContent = "¡ERROR DE VERIFICACIÓN! Faltan datos clave (DNI, Nombre o Proyecto) en el QR.";
                 statusBox.className = 'status-error'; 
-                document.getElementById('dni-output').textContent = 'VERIFICAR QR';
-                document.getElementById('nombre-output').textContent = 'VERIFICAR QR';
+                document.getElementById('dni-output').textContent = (dni === 'NO DISPONIBLE' ? 'VERIFICAR QR' : dni);
+                document.getElementById('nombre-output').textContent = (nombre === 'NO DISPONIBLE' ? 'VERIFICAR QR' : nombre);
+                document.getElementById('proyecto-output').textContent = (proyecto === 'NO DISPONIBLE' ? 'VERIFICAR QR' : proyecto);
             }
         });
     </script>
