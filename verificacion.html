@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación Oficial de Credencial CNE</title>
     <style>
-        /* Define la fuente Inter (moderna y limpia) y colores base */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
         
         :root {
-            --cne-azul: #0056b3; /* Azul institucional del CNE */
-            --cne-verde: #28a745; /* Verde para estado OK */
+            --cne-azul: #0056b3;
+            --cne-verde: #28a745;
             --cne-gris-claro: #f4f7f6;
             --cne-gris-medio: #666;
         }
@@ -36,13 +35,10 @@
             border-top: 10px solid var(--cne-azul); 
             animation: fadeIn 1s ease-out;
         }
-
-        /* Animación simple para una carga visualmente agradable */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .header {
             display: flex;
             flex-direction: column;
@@ -118,7 +114,6 @@
             color: var(--cne-gris-medio);
         }
 
-        /* ESTILOS PARA LA FOTO */
         #foto-container {
             text-align: center;
             margin-bottom: 20px;
@@ -131,25 +126,18 @@
             margin-bottom: 10px;
         }
         #foto-ciudadano {
-            width: 150px; /* Tamaño de visualización estándar */
+            width: 150px;
             height: 150px;
             object-fit: cover;
-            border-radius: 50%; /* Foto circular */
+            border-radius: 50%;
             border: 4px solid var(--cne-azul);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Ajustes de responsive para móviles */
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            .value {
-                font-size: 1.3em;
-            }
-            h1 {
-                font-size: 1.4em;
-            }
+            .container { padding: 20px; }
+            .value { font-size: 1.3em; }
+            h1 { font-size: 1.4em; }
         }
     </style>
 </head>
@@ -164,6 +152,7 @@
         <div id="foto-container">
             <h4>Cargando foto...</h4> 
         </div>
+
         <div class="data-box">
             <span class="label">ESTADO DE VERIFICACIÓN EN LÍNEA:</span>
             <div id="status-output" class="status-ok">DATOS VALIDADOS Y EN LÍNEA</div>
@@ -175,6 +164,9 @@
             
             <span class="label">NOMBRE COMPLETO:</span>
             <div id="nombre-output" class="value">Cargando...</div>
+
+            <span class="label">NÚMERO DE EMPLEADO:</span>
+            <div id="empleado-output" class="value">Cargando...</div>
             
             <span class="label">PROYECTO:</span>
             <div id="proyecto-output" class="value">Cargando...</div>
@@ -197,7 +189,6 @@
             pairs.forEach(pair => {
                 const [key, value] = pair.split('=');
                 if (key && value) {
-                    // Decodifica el valor para manejar espacios y caracteres especiales
                     params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '));
                 }
             });
@@ -208,11 +199,10 @@
             const params = getQueryParams();
             const dni = params['dni'] || 'NO DISPONIBLE';
             const nombre = params['nombre'] || 'NO DISPONIBLE';
+            const empleado = params['empleado'] || 'NO DISPONIBLE';
             const proyecto = params['proyecto'] || 'NO DISPONIBLE';
-            // NUEVA LECTURA: Leer el parámetro 'foto' de la URL
-            const nombreFoto = params['foto'] || null; 
+            const nombreFoto = params['foto'] || null;
             
-            // Formato de fecha para la consulta
             const today = new Date().toLocaleDateString('es-HN', { 
                 year: 'numeric', 
                 month: 'long', 
@@ -221,49 +211,36 @@
                 minute: '2-digit'
             });
 
-            // 1. Mostrar datos de texto
             document.getElementById('dni-output').textContent = dni;
             document.getElementById('nombre-output').textContent = nombre;
+            document.getElementById('empleado-output').textContent = empleado;
             document.getElementById('proyecto-output').textContent = proyecto; 
             document.getElementById('fecha-consulta').textContent = today;
             document.getElementById('footer-date').textContent = today;
             
             const statusBox = document.getElementById('status-output');
 
-            // 2. Lógica de estado y verificación de datos mínimos
-            if (dni === 'NO DISPONIBLE' || nombre === 'NO DISPONIBLE' || proyecto === 'NO DISPONIBLE') {
-                statusBox.textContent = "¡ERROR DE VERIFICACIÓN! Faltan datos clave (DNI, Nombre o Proyecto) en el QR.";
+            if (dni === 'NO DISPONIBLE' || nombre === 'NO DISPONIBLE' || empleado === 'NO DISPONIBLE' || proyecto === 'NO DISPONIBLE') {
+                statusBox.textContent = "❌ ¡ERROR DE VERIFICACIÓN! Faltan datos clave (DNI, Nombre, Empleado o Proyecto).";
                 statusBox.className = 'status-error'; 
-                document.getElementById('dni-output').textContent = (dni === 'NO DISPONIBLE' ? 'VERIFICAR QR' : dni);
-                document.getElementById('nombre-output').textContent = (nombre === 'NO DISPONIBLE' ? 'VERIFICAR QR' : nombre);
-                document.getElementById('proyecto-output').textContent = (proyecto === 'NO DISPONIBLE' ? 'VERIFICAR QR' : proyecto);
             }
             
-            // 3. Lógica para la Foto del Ciudadano
             const fotoContainer = document.getElementById('foto-container');
             
             if (nombreFoto) {
-                // IMPORTANTÍSIMO: Usamos el nombre del archivo directamente como fuente.
-                // Esto asume que el archivo de la foto (ej: 123456.png) FUE SUBIDO MANUALMENTE
-                // al mismo directorio de esta página en GitHub Pages.
-                const rutaImagen = nombreFoto; 
-
+                const rutaImagen = nombreFoto;
                 const imgElement = document.createElement('img');
                 imgElement.id = 'foto-ciudadano';
                 imgElement.src = rutaImagen;
                 imgElement.alt = `Foto de ${nombre}`;
                 
-                // Manejar el caso de que la foto no se encuentre en el servidor
                 imgElement.onerror = function() {
                     fotoContainer.innerHTML = '<h4>Foto del Ciudadano:</h4><p style="color:#dc3545; font-weight:bold;">❌ ¡Error! Foto no encontrada en el servidor.</p>';
                 };
                 
-                // Limpiar y añadir la imagen al contenedor
                 fotoContainer.innerHTML = '<h4>Foto del Ciudadano:</h4>';
                 fotoContainer.appendChild(imgElement);
-                
             } else {
-                // Si el parámetro 'foto' no existe en la URL
                 fotoContainer.innerHTML = '<h4>Foto del Ciudadano:</h4><p style="color:#ffc107; font-weight:bold;">⚠️ No hay foto adjunta en la credencial.</p>';
             }
         });
